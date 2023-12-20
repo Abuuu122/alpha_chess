@@ -1,27 +1,27 @@
 # # example 1
-#from game import play_game
-#from player_1 import player_1
-#from player_2 import player_2
+from game import play_game
+from player_1 import player_1
+from player_2 import player_2
 
-#red = player_1.Player("red")
-#black = player_2.Player("black")
-#play_game(red, black, delta_time = 1)    # start a new game and watch it comfortably
+red = player_1.Player("red")
+black = player_2.Player("black")
+play_game(red, black, delta_time = 1)    # start a new game and watch it comfortably
 
 
 
 
 # # example 2
-from headless_game import play_headless_game
-from player_1 import player_1
-from player_2 import player_2
+# from headless_game import play_headless_game
+# from player_1 import player_1
+# from player_2 import player_2
 
-if __name__ == "__main__":    # for Windows OS
-     red = player_1.Player("red")
-     black = player_2.Player("black")
-     # you can start a game for testing or collect game data by this function.
-     winner, text, history = play_headless_game(red, black, timeout = True)
-     # print the result in the console
-     print(winner, text, history)
+# if __name__ == "__main__":    # for Windows OS
+#     red = player_1.Player("red")
+#     black = player_2.Player("black")
+#     # you can start a game for testing or collect game data by this function.
+#     winner, text, history = play_headless_game(red, black, timeout = True)
+#     # print the result in the console
+#     print(winner, text, history)
 
 
 

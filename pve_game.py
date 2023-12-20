@@ -1,4 +1,5 @@
 import sys
+import copy
 
 from PyQt5.QtWidgets import QApplication
 from PyQt5.QtCore import QThread, pyqtSignal
@@ -31,6 +32,7 @@ class PVELoop(QThread):  # Thread responsible for chess piece movement of AI
             self.game_over_signal.emit(text)
         else:
             # Get action
+            self.player.update_history(copy.deepcopy(history))
             action = self.player.policy(board)
 
             # Check action

@@ -1,9 +1,11 @@
+"""策略价值网络"""
+
 
 import torch
 import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
-
+from config import CONFIG
 from torch.cuda.amp import autocast
 
 
@@ -28,6 +30,8 @@ class ResBlock(nn.Module):
         y = x + y
         return self.conv2_act(y)
 
+
+# 搭建骨干网络，输入：N, 9, 10, 9 --> N, C, H, W
 class Net(nn.Module):
 
     def __init__(self, num_channels=256, num_res_blocks=7):
@@ -81,6 +85,7 @@ class Net(nn.Module):
 
         return policy, value
 
+
 # 策略值网络，用来进行模型的训练
 class PolicyValueNet:
 
@@ -92,7 +97,8 @@ class PolicyValueNet:
         self.optimizer = torch.optim.Adam(params=self.policy_value_net.parameters(), lr=1e-3, betas=(0.9, 0.999), eps=1e-8, weight_decay=self.l2_const)
         if model_file:
             self.policy_value_net.load_state_dict(torch.load(model_file))  # 加载模型参数
-    
+
+    # 输入一个批次的状态，输出一个批次的动作概率和状态价值
     def policy_value(self, state_batch):
         self.policy_value_net.eval()
         state_batch = torch.tensor(state_batch).to(self.device)
@@ -100,32 +106,31 @@ class PolicyValueNet:
         log_act_probs, value = log_act_probs.cpu(), value.cpu()
         act_probs = np.exp(log_act_probs.detach().numpy())
         return act_probs, value.detach().numpy()
-    
+
     # 输入棋盘，返回每个合法动作的（动作，概率）元组列表，以及棋盘状态的分数
     def policy_value_fn(self, board):
         self.policy_value_net.eval()
         # 获取合法动作列表
-        legal_positions = board.action_list  ## a list of 4tuple
-        current_state_ = np.ascontiguousarray(board.current_state().reshape(-1, 9, 10, 9)).astype('float16')
-        current_state_ = torch.as_tensor(current_state_).to(self.device)
+        legal_positions = board.availables
+        current_state = np.ascontiguousarray(board.current_state().reshape(-1, 9, 10, 9)).astype('float16')
+        current_state = torch.as_tensor(current_state).to(self.device)
         # 使用神经网络进行预测
         with autocast(): #半精度fp16
-            log_act_probs, value = self.policy_value_net(current_state_) #log_act_probs is 2086
+            log_act_probs, value = self.policy_value_net(current_state)
         log_act_probs, value = log_act_probs.cpu() , value.cpu()
-        act_probs = np.exp(log_act_probs.detach().numpy().astype('float16').flatten())
+        act_probs = np.exp(log_act_probs.numpy().flatten()) if CONFIG['use_frame'] == 'paddle' else np.exp(log_act_probs.detach().numpy().astype('float16').flatten())
         # 只取出合法动作
+        # print(legal_positions)
         act_probs = zip(legal_positions, act_probs[legal_positions])
         # 返回动作概率，以及状态价值
         return act_probs, value.detach().numpy()
-    
-    
-    #save model
+
+    # 保存模型
     def save_model(self, model_file):
         torch.save(self.policy_value_net.state_dict(), model_file)
-        
-    
-        # 执行一步训练
-    def train_step(self, state_batch, mcts_probs, winner_batch, lr=0.01):
+
+    # 执行一步训练
+    def train_step(self, state_batch, mcts_probs, winner_batch, lr=0.002):
         self.policy_value_net.train()
         # 包装变量
         state_batch = torch.tensor(state_batch).to(self.device)
@@ -156,6 +161,10 @@ class PolicyValueNet:
             )
         return loss.detach().cpu().numpy(), entropy.detach().cpu().numpy()
 
-        
-    
-        
+
+if __name__ == '__main__':
+    net = Net().to('cuda')
+    test_data = torch.ones([8, 9, 10, 9]).to('cuda')
+    x_act, x_val = net(test_data)
+    print(x_act.shape)  # 8, 2086
+    print(x_val.shape)  # 8, 1
