@@ -124,7 +124,7 @@ class PolicyValueNet:
         # 只取出合法动作
         # for act in legal_positions:
         #     print(move_id2move_action[act])
-        # print(len(legal_positions))
+        # print(legal_positions)
         # print(len(act_probs[legal_positions]))
         act_probs = zip(legal_positions, act_probs[legal_positions])
         # 返回动作概率，以及状态价值

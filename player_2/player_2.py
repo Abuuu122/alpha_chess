@@ -53,7 +53,7 @@ class Player(): # please do not change the class name
         policy_value_net = PolicyValueNet(model_file='current_policy.pkl')
         mctsP = MCTSPlayer(policy_value_net.policy_value_fn,
                                 c_puct=5,
-                                n_playout=100,
+                                n_playout=300,
                                 is_selfplay=0)
         _history = self.history[-4:]  #[(6, 2, 5, 2, 0), ...]
         # print(_history)
@@ -81,7 +81,7 @@ class Player(): # please do not change the class name
         #     print(move_id2move_action[act])
         action_id = max(res, key=lambda act_node: act_node[1])[0]
         move_action = move_id2move_action[action_id]
-        print(move_action)
+        # print(move_action)
         start_x, start_y = int(move_action[0]), int(move_action[1])
         end_x, end_y = int(move_action[2]), int(move_action[3])
         action = (start_x, start_y, end_x, end_y)
