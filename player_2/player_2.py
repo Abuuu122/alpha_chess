@@ -5,6 +5,7 @@ from utils import get_legal_actions
 from mcts import MCTSPlayer
 from pytorch_net import PolicyValueNet
 import game1
+from game1 import move_id2move_action
 
 class Player(): # please do not change the class name
 
@@ -52,7 +53,7 @@ class Player(): # please do not change the class name
         policy_value_net = PolicyValueNet(model_file='current_policy.pkl')
         mctsP = MCTSPlayer(policy_value_net.policy_value_fn,
                                 c_puct=5,
-                                n_playout=1,
+                                n_playout=100,
                                 is_selfplay=0)
         _history = self.history[-4:]  #[(6, 2, 5, 2, 0), ...]
         # print(_history)
@@ -60,17 +61,33 @@ class Player(): # please do not change the class name
         state.init_board()
         state.change_board(board, _history, self.side)
 
-        # mcts
-        action = mctsP.get_action(state)
-        move_action = game1.move_id2move_action[action]
-        # print(move_action)
-        start_y, start_x = int(move_action[0]), int(move_action[1])
-        end_y, end_x = int(move_action[2]), int(move_action[3])
+        # 方法一：mcts
+        # action = mctsP.get_action(state)
+        # move_action = game1.move_id2move_action[action]
+        # # print(move_action)
+        # start_x, start_y = int(move_action[0]), int(move_action[1])
+        # end_x, end_y = int(move_action[2]), int(move_action[3])
+        # action = (start_x, start_y, end_x, end_y)
+        # print(action)
+
+
+        # 方法二：只用net，取概率最大的action
+        act_probs = policy_value_net.policy_value_fn(state)
+        acts = act_probs[0]
+        probs = act_probs[1]
+        res = list(acts)
+        # for i in res:
+        #     act = i[0]
+        #     print(move_id2move_action[act])
+        action_id = max(res, key=lambda act_node: act_node[1])[0]
+        move_action = move_id2move_action[action_id]
+        print(move_action)
+        start_x, start_y = int(move_action[0]), int(move_action[1])
+        end_x, end_y = int(move_action[2]), int(move_action[3])
         action = (start_x, start_y, end_x, end_y)
 
-        # res = policy_value_net.policy_value_fn(state)
 
-        print(action)
+
         return action
         # return random.choice(action_list)   # here we demonstrate the most basic player
 

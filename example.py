@@ -5,7 +5,7 @@ from player_2 import player_2
 
 red = player_1.Player("red")
 black = player_2.Player("black")
-play_game(red, black, delta_time = 1)    # start a new game and watch it comfortably
+play_game(red, black, delta_time = 0.2)    # start a new game and watch it comfortably
 
 
 
