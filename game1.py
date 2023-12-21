@@ -9,16 +9,16 @@ import random
 
 
 # 列表来表示棋盘，红方在上，黑方在下。使用时需要使用深拷贝
-state_list_init = [['红车', '红马', '红象', '红士', '红帅', '红士', '红象', '红马', '红车'],
+state_list_init = [['黑车', '黑马', '黑象', '黑士', '黑帅', '黑士', '黑象', '黑马', '黑车'],
                    ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
-                   ['一一', '红炮', '一一', '一一', '一一', '一一', '一一', '红炮', '一一'],
-                   ['红兵', '一一', '红兵', '一一', '红兵', '一一', '红兵', '一一', '红兵'],
-                   ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
-                   ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
-                   ['黑兵', '一一', '黑兵', '一一', '黑兵', '一一', '黑兵', '一一', '黑兵'],
                    ['一一', '黑炮', '一一', '一一', '一一', '一一', '一一', '黑炮', '一一'],
+                   ['黑兵', '一一', '黑兵', '一一', '黑兵', '一一', '黑兵', '一一', '黑兵'],
                    ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
-                   ['黑车', '黑马', '黑象', '黑士', '黑帅', '黑士', '黑象', '黑马', '黑车']]
+                   ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
+                   ['红兵', '一一', '红兵', '一一', '红兵', '一一', '红兵', '一一', '红兵'],
+                   ['一一', '红炮', '一一', '一一', '一一', '一一', '一一', '红炮', '一一'],
+                   ['一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一', '一一'],
+                   ['红车', '红马', '红象', '红士', '红帅', '红士', '红象', '红马', '红车']]
 
 
 # deque来存储棋盘状态，长度为4
@@ -28,14 +28,14 @@ for _ in range(4):
 
 # num2char = dict(0='一一', 1='黑兵', 2='黑士', 3='黑象', 4='黑马', 5='黑马', 6='黑车', 7='黑帅',
 #                 -1='红兵', -2='红士', -3='红象', -4='红马', -5='红炮', -6='红车', -7='红帅')
-char2num = dict(红车=-6, 红马=-4,
-                    红象=-3, 红士=-2,
-                    红帅=-7, 红炮=-5,
-                    红兵=-1, 黑车=6,
-                    黑马=4, 黑象=3,
-                    黑士=2, 黑帅=7,
-                    黑炮=5, 黑兵=1,
-                    一一=0)
+char2num = dict(红车=6, 红马=4,
+                    红象=3, 红士=2,
+                    红帅=7, 红炮=5,
+                    红兵=1, 黑车=-6,
+                    黑马=-4, 黑象=-3,
+                    黑士=-2, 黑帅=-7,
+                    黑炮=-5, 黑兵=-1,
+                    一一=-0)
 
 # 构建一个字典：字符串到数组的映射，函数：数组到字符串的映射
 string2array = dict(红车=np.array([1, 0, 0, 0, 0, 0, 0]), 红马=np.array([0, 1, 0, 0, 0, 0, 0]),
@@ -56,9 +56,11 @@ def getKey(dic,value):
     return result
 
 def trans(mat):
-    for row in mat:
-        for i in row:
-            i = getKey(char2num, i)
+    for i in range(10):
+        for j in range(9):
+            key = getKey(char2num, mat[i][j])
+            for item in key:
+                mat[i][j] = item
 
 def array2string(array):
     return list(filter(lambda string: (string2array[string] == array).all(), string2array))[0]
@@ -90,6 +92,9 @@ def state_list2state_array(state_list):
     _state_array = np.zeros([10, 9, 7])
     for i in range(10):
         for j in range(9):
+            # TODO:
+            # for item in state_list[i][j]:
+            #     _state_array[i][j] = string2array[item]
             _state_array[i][j] = string2array[state_list[i][j]]
     return _state_array
 
@@ -208,6 +213,9 @@ def get_legal_moves(state_deque, current_player_color):
 
     state_list = state_deque[-1]
     old_state_list = state_deque[-4]
+
+    # print(f"state_list: {state_list}")
+    # print(current_player_color)
 
     moves = []  # 用来存放所有合法的走子方法
     face_to_face = False  # 将军面对面
@@ -656,6 +664,7 @@ def get_legal_moves(state_deque, current_player_color):
             if change_state(state_list, m) != old_state_list:
                 moves.append(m)
 
+    # print(moves)
     moves_id = []
     for move in moves:
         moves_id.append(move_action2move_id[move])
@@ -672,9 +681,38 @@ class Board(object):
         self.state_deque = copy.deepcopy(state_deque_init)
         # self.current_player_color = '黑' if side == 'black' else '红'
 
-    def change_board(self, board):
-        self.state_list = copy.deepcopy(board)
+    def change_board(self, board, history, side):
+        # print(board)
+        # print(history)
+        # print(side)
+        # print(f"begin-------------{self.state_deque}")
+        self.state_list = copy.deepcopy(list(board))
         trans(self.state_list)
+        board_list = []
+        board_list.append(copy.deepcopy(board))
+        lm = history[-1]
+        lm = str(lm[0]) + str(lm[1]) + str(lm[2]) + str(lm[3])
+        # print(lm)
+        if history is not None:
+            self.last_move = move_action2move_id[lm]
+        for action in reversed(history):
+            back = copy.deepcopy(board_list[-1])
+            old_x = action[0]
+            old_y = action[1]
+            new_x = action[2]
+            new_y = action[3]
+            back[old_x][old_y] = back[new_x][new_y]
+            back[new_x][new_y] = action[4]
+            board_list.append(copy.deepcopy(back))
+        # print(board_list)
+        for bd in reversed(board_list):
+            trans(bd)
+            self.state_deque.append(copy.deepcopy(list(bd)))
+        self.current_player_color = '黑' if side == 'black' else '红'
+        self.current_player_id = self.color2id[self.current_player_color]
+        # print(f"after-----------------{self.state_deque}")
+        # print(move_id2move_action[self.last_move])
+        # print(self.current_state())
 
     # 初始化棋盘的方法
     def init_board(self, start_player=1):   # 传入先手玩家的id
@@ -707,6 +745,8 @@ class Board(object):
     @property
     # 获的当前盘面的所有合法走子集合
     def availables(self):
+        # print(self.state_deque)
+        # print(self.current_player_color)
         return get_legal_moves(self.state_deque, self.current_player_color)
 
     # 从当前玩家的视角返回棋盘状态，current_state_array: [9, 10, 9]  CHW
@@ -718,15 +758,17 @@ class Board(object):
         # 第8个平面表示的是当前player是不是先手player，如果是先手player则整个平面全部为1，否则全部为0
         _current_state[:7] = state_list2state_array(self.state_deque[-1]).transpose([2, 0, 1])  # [7, 10, 9]
 
-        if self.game_start:
-            # 解构self.last_move
+        # if self.game_start:
+        # 解构self.last_move
+        if self.last_move != -1:
             move = move_id2move_action[self.last_move]
             start_position = int(move[0]), int(move[1])
             end_position = int(move[2]), int(move[3])
             _current_state[7][start_position[0]][start_position[1]] = -1
             _current_state[7][end_position[0]][end_position[1]] = 1
         # 指出当前是哪个玩家走子
-        if self.action_count % 2 == 0:
+        # if self.action_count % 2 == 0:
+        if self.current_player_color == '红':
             _current_state[8][:, :] = 1.0
 
         return _current_state

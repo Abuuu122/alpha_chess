@@ -7,6 +7,7 @@ import numpy as np
 import torch.nn.functional as F
 from config import CONFIG
 from torch.cuda.amp import autocast
+from game1 import move_id2move_action
 
 
 # 搭建残差块
@@ -111,6 +112,7 @@ class PolicyValueNet:
     def policy_value_fn(self, board):
         self.policy_value_net.eval()
         # 获取合法动作列表
+        # print(board.current_state())
         legal_positions = board.availables
         current_state = np.ascontiguousarray(board.current_state().reshape(-1, 9, 10, 9)).astype('float16')
         current_state = torch.as_tensor(current_state).to(self.device)
@@ -120,7 +122,10 @@ class PolicyValueNet:
         log_act_probs, value = log_act_probs.cpu() , value.cpu()
         act_probs = np.exp(log_act_probs.numpy().flatten()) if CONFIG['use_frame'] == 'paddle' else np.exp(log_act_probs.detach().numpy().astype('float16').flatten())
         # 只取出合法动作
-        # print(legal_positions)
+        # for act in legal_positions:
+        #     print(move_id2move_action[act])
+        # print(len(legal_positions))
+        # print(len(act_probs[legal_positions]))
         act_probs = zip(legal_positions, act_probs[legal_positions])
         # 返回动作概率，以及状态价值
         return act_probs, value.detach().numpy()

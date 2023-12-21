@@ -5,6 +5,8 @@ import numpy as np
 import copy
 from config import CONFIG
 
+from game1 import move_id2move_action
+
 
 def softmax(x):
     probs = np.exp(x - np.max(x))
@@ -104,6 +106,7 @@ class MCTS(object):
                 break
             # 贪心算法选择下一步行动
             action, node = node.select(self._c_puct)
+            # print(move_id2move_action[action])
             state.do_move(action)
 
         # 使用网络评估叶子节点，网络输出（动作，概率）元组p的列表以及当前玩家视角的得分[-1, 1]
@@ -133,7 +136,6 @@ class MCTS(object):
         for n in range(self._n_playout):
             state_copy = copy.deepcopy(state)
             self._playout(state_copy)
-
         # 跟据根节点处的访问计数来计算移动概率
         act_visits= [(act, node._n_visits)
                      for act, node in self._root._children.items()]

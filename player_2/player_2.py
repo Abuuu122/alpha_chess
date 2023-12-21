@@ -52,11 +52,15 @@ class Player(): # please do not change the class name
         policy_value_net = PolicyValueNet(model_file='current_policy.pkl')
         mctsP = MCTSPlayer(policy_value_net.policy_value_fn,
                                 c_puct=5,
-                                n_playout=100,
+                                n_playout=1,
                                 is_selfplay=0)
+        _history = self.history[-4:]  #[(6, 2, 5, 2, 0), ...]
+        # print(_history)
         state = game1.Board()
         state.init_board()
-        state.change_board(board)
+        state.change_board(board, _history, self.side)
+
+        # mcts
         action = mctsP.get_action(state)
         move_action = game1.move_id2move_action[action]
         # print(move_action)
@@ -64,7 +68,9 @@ class Player(): # please do not change the class name
         end_y, end_x = int(move_action[2]), int(move_action[3])
         action = (start_x, start_y, end_x, end_y)
 
-        # print(action)
+        # res = policy_value_net.policy_value_fn(state)
+
+        print(action)
         return action
         # return random.choice(action_list)   # here we demonstrate the most basic player
 
