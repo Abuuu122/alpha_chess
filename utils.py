@@ -412,12 +412,14 @@ def get_King_location(board, side):  # Get position of King. Used for check_hist
             for j in (3, 4, 5):
                 if(board[i][j] == 7):
                     return i, j
+            return 9, 4
                 
     elif side == "black":
         for i in (0, 1, 2):
             for j in (3, 4, 5):
                 if(board[i][j] == -7):
                     return i, j
+            return 0, 4
 
 def change_round(side):
     if side == "red":   return "black"

@@ -3,9 +3,9 @@ from game import play_game
 from player_1 import player_1
 from player_2 import player_2
 
-red = player_1.Player("red")
+red = player_2.Player("red")
 black = player_2.Player("black")
-play_game(red, black, delta_time = 0.01)    # start a new game and watch it comfortably
+play_game(red, black, delta_time = 0.5)    # start a new game and watch it comfortably
 
 
 
