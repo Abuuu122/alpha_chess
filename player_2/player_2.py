@@ -93,20 +93,6 @@ class Player(): # please do not change the class name
         for i in range(10):
             for j in range(9):
                 if abs(board[i][j]) == 7:
-                    # if self.side == "red":
-                    #     if who == 0:
-                    #         if board[i][j] > 0:
-                    #             return False
-                    #     elif who == 1:
-                    #         if board[i][j] < 0:
-                    #             return False
-                    # elif self.side == "black":
-                    #     if who == 0:
-                    #         if board[i][j] < 0:
-                    #             return False
-                    #     elif who == 1:
-                    #         if board[i][j] > 0:
-                    #             return False
                     cnt = cnt + 1
         if cnt == 2:
             return False

@@ -12,8 +12,8 @@ from player_2 import player_2
 # from player_9 import player_9
 # from player_10 import player_10
 
-Players = (player_1.player,
-           player_2.player,)
+Players = (player_1.Player,
+           player_2.Player,)
         #    player_3.player,
         #    player_4.player,
         #    player_5.player,
