@@ -89,23 +89,27 @@ class Player(): # please do not change the class name
         pass
 
     def is_game_over(self, who, board):  # 判断游戏是否结束
+        cnt = 0
         for i in range(10):
             for j in range(9):
                 if abs(board[i][j]) == 7:
-                    if self.side == "red":
-                        if who == 0:
-                            if board[i][j] > 0:
-                                return False
-                        elif who == 1:
-                            if board[i][j] < 0:
-                                return False
-                    elif self.side == "black":
-                        if who == 0:
-                            if board[i][j] < 0:
-                                return False
-                        elif who == 1:
-                            if board[i][j] > 0:
-                                return False
+                    # if self.side == "red":
+                    #     if who == 0:
+                    #         if board[i][j] > 0:
+                    #             return False
+                    #     elif who == 1:
+                    #         if board[i][j] < 0:
+                    #             return False
+                    # elif self.side == "black":
+                    #     if who == 0:
+                    #         if board[i][j] < 0:
+                    #             return False
+                    #     elif who == 1:
+                    #         if board[i][j] > 0:
+                    #             return False
+                    cnt = cnt + 1
+        if cnt == 2:
+            return False
         return True
 
     def alpha_beta(self, board, depth, alpha, beta):  # alpha-beta剪枝，alpha是大可能下界，beta是最小可能上界
@@ -121,13 +125,13 @@ class Player(): # please do not change the class name
         for move in _move_list:
             move_list.append(Step(move[0], move[1], move[2], move[3]))
         # 利用历史表0
-        # for i in range(len(move_list)):
-        #     move_list[i].score = self.history_table.get_history_score(who, move_list[i])
-        # move_list.sort()  # 为了让更容易剪枝利用历史表得分进行排序
+        for i in range(len(move_list)):
+            move_list[i].score = self.history_table.get_history_score(who, move_list[i])
+        move_list.sort()  # 为了让更容易剪枝利用历史表得分进行排序
         # # for item in move_list:
         # #     print(item.score)
         # # print('----------------------')
-        # best_step = move_list[0]
+        best_step = move_list[0]
 
         score_list = []
         for step in move_list:
@@ -147,8 +151,8 @@ class Player(): # please do not change the class name
                 break
         # print(score_list)
         # 更新历史表
-        # if best_step is not None:
-        #     self.history_table.add_history_score(who, best_step, depth)
+        if best_step is not None:
+            self.history_table.add_history_score(who, best_step, depth)
         return alpha
 
     def evaluate(self, who, board):  # who表示该谁走，返回评分值
@@ -165,9 +169,9 @@ class Player(): # please do not change the class name
                 type = abs(now_chess)
                 if type == 0:
                     continue
-                now = 0 if who == 0 else 1
+                # now = 0 if who == 0 else 1
                 if self.side == "red":
-                    if who == 0:
+                    if who == 1:
                         if now_chess > 0:
                             now = 0
                         else:
@@ -178,7 +182,7 @@ class Player(): # please do not change the class name
                         else:
                             now = 1
                 elif self.side == "black":
-                    if who == 0:
+                    if who == 1:
                         if now_chess < 0:
                             now = 0
                         else:
@@ -200,13 +204,18 @@ class Player(): # please do not change the class name
                 if self.side == "red":
                     if now == 0:  # 如果是要求最大值的玩家
                         pos_val[now] += cc.pos_val[type][pos]
-                    else:
+                        # print(f"now == {now}: type = {type} pos = {pos} pos_val = {cc.pos_val[type][pos]}")
+                    elif now == 1:
                         pos_val[now] += cc.pos_val[type][89 - pos]
+                        # print(f"now == {now}: type = {type} pos = {pos} pos_val = {cc.pos_val[type][89-pos]}")
                 elif self.side == "black":
                     if now == 0:  # 如果是要求最大值的玩家
                         pos_val[now] += cc.pos_val[type][89 - pos]
-                    else:
+                        # print(f"now == {now}: type = {type} pos = {pos} pos_val = {cc.pos_val[type][89 - pos]}")
+                    elif now == 1:
                         pos_val[now] += cc.pos_val[type][pos]
+                        # print(f"now == {now}: type = {type} pos = {pos} pos_val = {cc.pos_val[type][pos]}")
+
         #         # 计算机动性价值，记录关系信息
         #         for item in temp_move_list:
         #             # print('----------------')

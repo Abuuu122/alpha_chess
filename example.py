@@ -1,11 +1,11 @@
 # # example 1
-from game import play_game
-from player_1 import player_1
-from player_2 import player_2
-
-red = player_2.Player("red")
-black = player_2.Player("black")
-play_game(red, black, delta_time = 0.5)    # start a new game and watch it comfortably
+# from game import play_game
+# from player_1 import player_1
+# from player_2 import player_2
+#
+# red = player_2.Player("red")
+# black = player_2.Player("black")
+# play_game(red, black, delta_time = 0.5)    # start a new game and watch it comfortably
 
 
 
@@ -50,8 +50,8 @@ play_game(red, black, delta_time = 0.5)    # start a new game and watch it comfo
 
 
 # # example 5
-# from player_1 import player_1
-# from pve_game import play_pve_game
-# player = player_1.Player("red")    # AI takes red side
-# play_pve_game("black", player)    # you take black side
+from player_2 import player_2
+from pve_game import play_pve_game
+player = player_2.Player("red")    # AI takes red side
+play_pve_game("black", player)    # you take black side
 

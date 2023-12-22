@@ -306,7 +306,7 @@ def check_King_attacked(board, action, red_piece, black_piece):    # Check if Ki
             # Red_King is at the end of red_piece
             Red_King_x = red_piece[-1][1]
             Red_King_y = red_piece[-1][2]
-
+        # print(f"black:{black_piece}")
         for piece in black_piece:
             if piece == (eaten_id,new_x,new_y):
                 continue
@@ -327,7 +327,7 @@ def check_King_attacked(board, action, red_piece, black_piece):    # Check if Ki
             # Black_King is at the end of red_piece
             Black_King_x = black_piece[-1][1]
             Black_King_y = black_piece[-1][2]
-
+        # print(f"red:{red_piece}")
         for piece in red_piece:
             if piece == (eaten_id,new_x,new_y):
                 continue
