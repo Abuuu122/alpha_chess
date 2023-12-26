@@ -1,4 +1,4 @@
-class Step:  # 走法类
+class Step:
     def __init__(self, from_x=-1, from_y=-1, to_x=-1, to_y=-1):
         self.from_x = from_x
         self.from_y = from_y

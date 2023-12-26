@@ -11,6 +11,16 @@ def init_board():   # Initialize chessboard
              [ 0,  5,  0,  0,  0,  0,  0,  5,  0],
              [ 0,  0,  0,  0,  0,  0,  0,  0,  0],
              [ 6,  4,  3,  2,  7,  2,  3,  4,  6],)
+    # board = ([0, 0, 0, 0, -7, -2, 0, 0, 0],
+    #          [0, 0, 0, 0, -2, 0, 0, 0, 0],
+    #          [0, 0, 0, 0, -3, 0, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 0, 0, 0, 0],
+    #          [0, -1, 0, -6, -1, 0, -4, 0, -1],
+    #          [0, 0, 0, 0, 0, 2, 0, 0, 0],
+    #          [0, 0, 0, 0, 0, 7, 0, 0, 0],
+    #          [0, 0, 0, 2, 0, 0, 0, 0, 0],)
     return board
 
 def get_legal_actions(board: tuple, side: str, history: list): # Generate all feasible actions for side based on the current board and history
@@ -306,7 +316,7 @@ def check_King_attacked(board, action, red_piece, black_piece):    # Check if Ki
             # Red_King is at the end of red_piece
             Red_King_x = red_piece[-1][1]
             Red_King_y = red_piece[-1][2]
-        # print(f"black:{black_piece}")
+
         for piece in black_piece:
             if piece == (eaten_id,new_x,new_y):
                 continue
@@ -327,7 +337,7 @@ def check_King_attacked(board, action, red_piece, black_piece):    # Check if Ki
             # Black_King is at the end of red_piece
             Black_King_x = black_piece[-1][1]
             Black_King_y = black_piece[-1][2]
-        # print(f"red:{red_piece}")
+
         for piece in red_piece:
             if piece == (eaten_id,new_x,new_y):
                 continue
@@ -412,14 +422,12 @@ def get_King_location(board, side):  # Get position of King. Used for check_hist
             for j in (3, 4, 5):
                 if(board[i][j] == 7):
                     return i, j
-            return 9, 4
                 
     elif side == "black":
         for i in (0, 1, 2):
             for j in (3, 4, 5):
                 if(board[i][j] == -7):
                     return i, j
-            return 0, 4
 
 def change_round(side):
     if side == "red":   return "black"
